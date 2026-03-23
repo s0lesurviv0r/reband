@@ -21,3 +21,30 @@ const (
 	ModulationDPMR
 	ModulationTETRA
 )
+
+var modulationNames = map[Modulation]string{
+	ModulationFM:     "FM",
+	ModulationNFM:    "NFM",
+	ModulationAM:     "AM",
+	ModulationWFM:    "WFM",
+	ModulationLSB:    "LSB",
+	ModulationUSB:    "USB",
+	ModulationCW:     "CW",
+	ModulationC4FM:   "C4FM",
+	ModulationDSTAR:  "D-STAR",
+	ModulationP25:    "P25",
+	ModulationNXDN:   "NXDN",
+	ModulationDMR:    "DMR",
+	ModulationYSF:    "YSF",
+	ModulationFUSION: "FUSION",
+	ModulationPOCSAG: "POCSAG",
+	ModulationDPMR:   "DPMR",
+	ModulationTETRA:  "TETRA",
+}
+
+func (m Modulation) String() string {
+	if s, ok := modulationNames[m]; ok {
+		return s
+	}
+	return "unknown"
+}

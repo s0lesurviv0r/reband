@@ -5,7 +5,7 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/s0lesurviv0r/channel-conv/types"
+	"github.com/s0lesurviv0r/reband/types"
 )
 
 var bc125pyToStandard = map[string]types.Modulation{

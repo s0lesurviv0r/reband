@@ -4,9 +4,10 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/rodaine/table"
 	"github.com/spf13/cobra"
 
-	"github.com/s0lesurviv0r/channel-conv/formats"
+	"github.com/s0lesurviv0r/reband/formats"
 )
 
 func DecodeCommand() *cobra.Command {
@@ -40,9 +41,25 @@ func DecodeCommand() *cobra.Command {
 				return err
 			}
 
-			for _, channel := range channels {
-				fmt.Printf("%+v", channel)
+			tbl := table.New("Index", "Name", "AlphaTag", "Frequency", "Modulation", "Duplex", "Offset", "Tone", "Power", "Delay", "Lockout", "Priority", "Comment")
+			for _, ch := range channels {
+				tbl.AddRow(
+					ch.Index,
+					ch.Name,
+					ch.AlphaTag,
+					ch.Frequency,
+					ch.Modulation,
+					ch.Duplex,
+					ch.Offset,
+					ch.Tone,
+					ch.Power,
+					ch.Delay,
+					ch.Lockout,
+					ch.Priority,
+					ch.Comment,
+				)
 			}
+			tbl.Print()
 
 			return nil
 		},

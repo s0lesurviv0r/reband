@@ -43,6 +43,17 @@ const (
 	DuplexMinus
 )
 
+func (d Duplex) String() string {
+	switch d {
+	case DuplexPlus:
+		return "+"
+	case DuplexMinus:
+		return "-"
+	default:
+		return ""
+	}
+}
+
 type Tone struct {
 	Type ToneType
 
@@ -54,6 +65,17 @@ type Tone struct {
 
 func (t Tone) CTCSS() string {
 	return fmt.Sprintf("%.1f", float64(t.Value)/10)
+}
+
+func (t Tone) String() string {
+	switch t.Type {
+	case ToneTypeCTCSS:
+		return "CTCSS " + t.CTCSS()
+	case ToneTypeDCS:
+		return fmt.Sprintf("DCS %03d", t.Value)
+	default:
+		return ""
+	}
 }
 
 type Channel struct {

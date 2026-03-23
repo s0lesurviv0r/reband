@@ -5,7 +5,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/s0lesurviv0r/channel-conv/types"
+	"github.com/s0lesurviv0r/reband/types"
 )
 
 var chirpToStandard = map[string]types.Modulation{

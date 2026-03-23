@@ -1,7 +1,7 @@
 .PHONY: build
 
 build:
-	go build -o build/channel-conv main.go
+	go build -o build/reband main.go
 
 test:
 	go test -v ./...

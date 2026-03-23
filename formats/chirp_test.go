@@ -8,7 +8,7 @@ import (
 	"github.com/stretchr/testify/require"
 	"github.com/stretchr/testify/suite"
 
-	"github.com/s0lesurviv0r/channel-conv/types"
+	"github.com/s0lesurviv0r/reband/types"
 )
 
 type ChirpTestSuite struct {

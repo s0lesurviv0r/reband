@@ -1,12 +1,15 @@
 package main
 
 import (
-	"github.com/s0lesurviv0r/channel-conv/cmd"
+	"fmt"
+	"os"
+
+	"github.com/s0lesurviv0r/reband/cmd"
 )
 
 func main() {
-	err := cmd.RootCmd().Execute()
-	if err != nil {
-		panic(err)
+	if err := cmd.RootCmd().Execute(); err != nil {
+		fmt.Fprintln(os.Stderr, err)
+		os.Exit(1)
 	}
 }

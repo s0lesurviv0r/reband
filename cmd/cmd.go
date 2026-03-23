@@ -28,6 +28,7 @@ func RootCmd() *cobra.Command {
 	cmd.Flags().BoolVar(&debug, "debug", false, "Enable debug logging")
 
 	cmd.AddCommand(DecodeCommand())
+	cmd.AddCommand(ConvertCommand())
 
 	return cmd
 }
