@@ -14,7 +14,8 @@ func RootCmd() *cobra.Command {
 		Use:          "freq-conv",
 		Short:        "Convert scanner/transceiver channels between different formats",
 		Long:         "Convert scanner/transceiver channels between different formats",
-		SilenceUsage: true, // commands call cmd.Usage() explicitly for arg errors
+		SilenceUsage:  true, // commands call cmd.Usage() explicitly for arg errors
+		SilenceErrors: true, // main.go prints the error; avoid printing it twice
 		PersistentPreRun: func(cmd *cobra.Command, args []string) {
 			log.SetOutput(os.Stdout)
 			log.SetFormatter(&log.TextFormatter{

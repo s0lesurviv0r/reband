@@ -81,7 +81,7 @@ freq-conv convert --from reband --to bc125py --input channels.csv --output scann
 | `reband` | Reband CSV (all channel fields) | ✓ | ✓ |
 | `bc125py` | Uniden BC125AT/BC125XLT scanner | ✓ | ✓ |
 | `chirp` | CHIRP radio programming software | ✓ | ✓ |
-| `uv-pro` | UV-Pro | | |
+| `uv-pro` | UV-Pro | ✓ | ✓ |
 | `radioreference` | RadioReference | | |
 | `sdrtrunk` | SDRTrunk | | |
 | `gqrx` | GQRX | | |

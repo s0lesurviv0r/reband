@@ -3,10 +3,13 @@ package cmd
 import (
 	"fmt"
 	"os"
+	"path/filepath"
+	"strconv"
 
 	"github.com/spf13/cobra"
 
 	"github.com/s0lesurviv0r/reband/formats"
+	"github.com/s0lesurviv0r/reband/types"
 )
 
 func ConvertCommand() *cobra.Command {
@@ -15,6 +18,8 @@ func ConvertCommand() *cobra.Command {
 	var fromFormat string
 	var toFormat string
 	var onError string
+	var splitSize int
+	var outputDir string
 
 	cmd := &cobra.Command{
 		Use:   "convert",
@@ -32,6 +37,14 @@ func ConvertCommand() *cobra.Command {
 				_ = cmd.Usage()
 				return fmt.Errorf("--to is required")
 			}
+			if splitSize > 0 && outputDir == "" {
+				_ = cmd.Usage()
+				return fmt.Errorf("--output-dir is required when --split-output-size is set")
+			}
+			if splitSize > 0 && outputPath != "" {
+				_ = cmd.Usage()
+				return fmt.Errorf("--output and --split-output-size are mutually exclusive")
+			}
 
 			policy, err := formats.ParseErrorPolicy(onError)
 			if err != nil {
@@ -44,12 +57,6 @@ func ConvertCommand() *cobra.Command {
 			}
 			src.SetErrorPolicy(policy)
 
-			dst, err := formats.Get(toFormat)
-			if err != nil {
-				return err
-			}
-			dst.SetErrorPolicy(policy)
-
 			reader, err := os.Open(inputPath)
 			if err != nil {
 				return err
@@ -60,6 +67,16 @@ func ConvertCommand() *cobra.Command {
 			if err != nil {
 				return err
 			}
+
+			if splitSize > 0 {
+				return encodeChunks(channels, splitSize, outputDir, toFormat, policy)
+			}
+
+			dst, err := formats.Get(toFormat)
+			if err != nil {
+				return err
+			}
+			dst.SetErrorPolicy(policy)
 
 			writer := os.Stdout
 			if outputPath != "" {
@@ -80,6 +97,43 @@ func ConvertCommand() *cobra.Command {
 	cmd.Flags().StringVar(&fromFormat, "from", "", "Source format")
 	cmd.Flags().StringVar(&toFormat, "to", "", "Destination format")
 	cmd.Flags().StringVar(&onError, "on-error", "exit", "How to handle row errors: exit, skip, or empty")
+	cmd.Flags().IntVar(&splitSize, "split-output-size", 0, "Split output into multiple files with at most this many channels each")
+	cmd.Flags().StringVar(&outputDir, "output-dir", "", "Directory to write split output files (required with --split-output-size)")
 
 	return cmd
 }
+
+func encodeChunks(channels []types.Channel, size int, dir string, toFormat string, policy formats.ErrorPolicy) error {
+	numFiles := (len(channels) + size - 1) / size
+	digits := len(strconv.Itoa(numFiles))
+
+	for i := range numFiles {
+		chunk := channels[i*size : min(i*size+size, len(channels))]
+		filename := fmt.Sprintf("%0*d.csv", digits, i+1)
+		path := filepath.Join(dir, filename)
+
+		f, err := os.Create(path)
+		if err != nil {
+			return fmt.Errorf("failed to create %s: %w", path, err)
+		}
+
+		dst, err := formats.Get(toFormat)
+		if err != nil {
+			f.Close()
+			return err
+		}
+		dst.SetErrorPolicy(policy)
+
+		if err := dst.Encode(f, chunk); err != nil {
+			f.Close()
+			return fmt.Errorf("failed to encode %s: %w", path, err)
+		}
+
+		if err := f.Close(); err != nil {
+			return fmt.Errorf("failed to close %s: %w", path, err)
+		}
+	}
+
+	return nil
+}
+
