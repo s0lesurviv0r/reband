@@ -14,7 +14,7 @@ The binary will be placed at `build/reband`.
 ## Usage
 
 ```
-freq-conv [--debug] <command> [flags]
+reband [--debug] <command> [flags]
 ```
 
 ### Global flags
@@ -30,7 +30,7 @@ freq-conv [--debug] <command> [flags]
 Decode a channel list file and print its contents.
 
 ```sh
-freq-conv decode --format <format> --path <file>
+reband decode --format <format> --path <file>
 ```
 
 | Flag | Required | Description |
@@ -41,7 +41,7 @@ freq-conv decode --format <format> --path <file>
 
 **Example:**
 ```sh
-freq-conv decode --format bc125py --path channels.csv
+reband decode --format bc125py --path channels.csv
 ```
 
 ---
@@ -51,8 +51,8 @@ freq-conv decode --format bc125py --path channels.csv
 Convert a channel list from one format to another.
 
 ```sh
-freq-conv convert --from <format> --to <format> --input <file> [--output <file>]
-freq-conv convert --from <format> --to <format> --input <file> --split-output-size <n> --output-dir <dir>
+reband convert --from <format> --to <format> --input <file> [--output <file>]
+reband convert --from <format> --to <format> --input <file> --split-output-size <n> --output-dir <dir>
 ```
 
 | Flag | Required | Description |
@@ -70,16 +70,16 @@ When `--split-output-size` is set, output files are written to `--output-dir` na
 **Examples:**
 ```sh
 # Convert BC125PY to Reband CSV, write to file
-freq-conv convert --from bc125py --to reband --input scanner.csv --output out.csv
+reband convert --from bc125py --to reband --input scanner.csv --output out.csv
 
 # Convert CHIRP to Reband CSV, print to stdout
-freq-conv convert --from chirp --to reband --input chirp.csv
+reband convert --from chirp --to reband --input chirp.csv
 
 # Convert Reband CSV to BC125PY
-freq-conv convert --from reband --to bc125py --input channels.csv --output scanner.csv
+reband convert --from reband --to bc125py --input channels.csv --output scanner.csv
 
 # Convert UV-Pro CSV to Reband CSV, split into files of 50 channels each
-freq-conv convert --from uv-pro --to reband --input channels.csv --split-output-size 50 --output-dir out/
+reband convert --from uv-pro --to reband --input channels.csv --split-output-size 50 --output-dir out/
 ```
 
 ---

@@ -11,7 +11,7 @@ func RootCmd() *cobra.Command {
 	var debug bool
 
 	cmd := &cobra.Command{
-		Use:          "freq-conv",
+		Use:          "reband",
 		Short:        "Convert scanner/transceiver channels between different formats",
 		Long:         "Convert scanner/transceiver channels between different formats",
 		SilenceUsage:  true, // commands call cmd.Usage() explicitly for arg errors
