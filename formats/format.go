@@ -7,22 +7,43 @@ import (
 	"github.com/s0lesurviv0r/reband/types"
 )
 
+type ErrorPolicy int
+
+const (
+	ErrorPolicyExit  ErrorPolicy = iota // stop and return the error (default)
+	ErrorPolicySkip                     // skip the bad row
+	ErrorPolicyEmpty                    // keep the row as an empty placeholder
+)
+
+func ParseErrorPolicy(s string) (ErrorPolicy, error) {
+	switch s {
+	case "exit":
+		return ErrorPolicyExit, nil
+	case "skip":
+		return ErrorPolicySkip, nil
+	case "empty":
+		return ErrorPolicyEmpty, nil
+	default:
+		return 0, fmt.Errorf("unknown --on-error value %q: must be exit, skip, or empty", s)
+	}
+}
+
 type Format interface {
 	Decode(io.Reader) ([]types.Channel, error)
 	Encode(io.Writer, []types.Channel) error
+	SetErrorPolicy(ErrorPolicy)
 }
 
-var formats = map[string]Format{
-	"bc125py":   NewBC125PY(),
-	"chirp":     NewChirp(),
-	"reband": NewRebandCSV(),
+var formatFactories = map[string]func() Format{
+	"bc125py": func() Format { return NewBC125PY() },
+	"chirp":   func() Format { return NewChirp() },
+	"reband":  func() Format { return NewRebandCSV() },
 }
 
 func Get(name string) (Format, error) {
-	format, ok := formats[name]
+	factory, ok := formatFactories[name]
 	if !ok {
 		return nil, fmt.Errorf("unknown format %s", name)
 	}
-
-	return format, nil
+	return factory(), nil
 }

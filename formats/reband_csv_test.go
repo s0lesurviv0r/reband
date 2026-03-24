@@ -20,7 +20,7 @@ func TestRebandCSVTestSuite(t *testing.T) {
 	suite.Run(t, new(RebandCSVTestSuite))
 }
 
-const rebandHeader = "Index,Name,AlphaTag,Comment,Frequency,Duplex,Offset,ToneType,ToneValue,Modulation,Power,Delay,Lockout,Priority\n"
+const rebandHeader = "Index,Name,AlphaTag,Comment,Frequency,Duplex,Offset,ToneType,ToneValue,Modulation,Bandwidth,Power,Delay,Lockout,Priority\n"
 
 func (s *RebandCSVTestSuite) TestDecode() {
 	t := s.T()
@@ -31,22 +31,23 @@ func (s *RebandCSVTestSuite) TestDecode() {
 		expected types.Channel
 	}{
 		{
-			name:  "simple",
-			input: "1,Channel 1,CH1,A comment,462.5500,,0.0000,none,0,nfm,0,2,false,false\n",
+			name:  "narrowband",
+			input: "1,Channel 1,CH1,A comment,462.5500,,0.0000,none,0,fm,12.5,0,2,false,false\n",
 			expected: types.Channel{
 				Index:      1,
 				Name:       "Channel 1",
 				AlphaTag:   "CH1",
 				Comment:    "A comment",
 				Frequency:  types.Frequency(462550000),
-				Modulation: types.ModulationNFM,
+				Modulation: types.ModulationFM,
+				Bandwidth:  12500,
 				Tone:       types.Tone{Type: types.ToneTypeNone},
 				Delay:      2 * time.Second,
 			},
 		},
 		{
-			name:  "ctcss",
-			input: "2,Repeater,RPT,,146.5200,+,0.6000,ctcss,1567,fm,50,0,false,false\n",
+			name:  "ctcss_repeater",
+			input: "2,Repeater,RPT,,146.5200,+,0.6000,ctcss,1567,fm,25.0,50,0,false,false\n",
 			expected: types.Channel{
 				Index:      2,
 				Name:       "Repeater",
@@ -56,12 +57,13 @@ func (s *RebandCSVTestSuite) TestDecode() {
 				Offset:     types.Frequency(600000),
 				Tone:       types.Tone{Type: types.ToneTypeCTCSS, Value: 1567},
 				Modulation: types.ModulationFM,
+				Bandwidth:  25000,
 				Power:      50,
 			},
 		},
 		{
 			name:  "dcs",
-			input: "3,DCS Chan,DCS,,155.3400,-,0.6000,dcs,23,fm,5,0,true,true\n",
+			input: "3,DCS Chan,DCS,,155.3400,-,0.6000,dcs,23,fm,25.0,5,0,true,true\n",
 			expected: types.Channel{
 				Index:      3,
 				Name:       "DCS Chan",
@@ -71,6 +73,7 @@ func (s *RebandCSVTestSuite) TestDecode() {
 				Offset:     types.Frequency(600000),
 				Tone:       types.Tone{Type: types.ToneTypeDCS, Value: 23},
 				Modulation: types.ModulationFM,
+				Bandwidth:  25000,
 				Power:      5,
 				Lockout:    true,
 				Priority:   true,
@@ -103,17 +106,18 @@ func (s *RebandCSVTestSuite) TestEncode() {
 		expected string
 	}{
 		{
-			name: "simple",
+			name: "narrowband",
 			input: types.Channel{
 				Index:      1,
 				Name:       "Channel 1",
 				AlphaTag:   "CH1",
 				Comment:    "A comment",
 				Frequency:  types.Frequency(462550000),
-				Modulation: types.ModulationNFM,
+				Modulation: types.ModulationFM,
+				Bandwidth:  12500,
 				Delay:      2 * time.Second,
 			},
-			expected: "1,Channel 1,CH1,A comment,462.5500,,0.0000,none,0,nfm,0,2,false,false\n",
+			expected: "1,Channel 1,CH1,A comment,462.5500,,0.0000,none,0,fm,12.5,0,2,false,false\n",
 		},
 		{
 			name: "ctcss_repeater",
@@ -126,9 +130,10 @@ func (s *RebandCSVTestSuite) TestEncode() {
 				Offset:     types.Frequency(600000),
 				Tone:       types.Tone{Type: types.ToneTypeCTCSS, Value: 1567},
 				Modulation: types.ModulationFM,
+				Bandwidth:  25000,
 				Power:      50,
 			},
-			expected: "2,Repeater,RPT,,146.5200,+,0.6000,ctcss,1567,fm,50,0,false,false\n",
+			expected: "2,Repeater,RPT,,146.5200,+,0.6000,ctcss,1567,fm,25.0,50,0,false,false\n",
 		},
 	}
 

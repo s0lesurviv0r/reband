@@ -35,7 +35,8 @@ func (s *BC125PYTestSuite) TestDecode() {
 				Index:      1,
 				Name:       "Channel 1",
 				Frequency:  types.Frequency(462550000),
-				Modulation: types.ModulationNFM,
+				Modulation: types.ModulationFM,
+				Bandwidth:  12500,
 				Tone: types.Tone{
 					Type:  types.ToneTypeNone,
 					Value: 0,
@@ -52,7 +53,8 @@ func (s *BC125PYTestSuite) TestDecode() {
 				Index:      1,
 				Name:       "Channel 1",
 				Frequency:  types.Frequency(462550000),
-				Modulation: types.ModulationNFM,
+				Modulation: types.ModulationFM,
+				Bandwidth:  12500,
 				Tone: types.Tone{
 					Type:  types.ToneTypeCTCSS,
 					Value: 1567,
@@ -69,7 +71,8 @@ func (s *BC125PYTestSuite) TestDecode() {
 				Index:      1,
 				Name:       "Channel 1",
 				Frequency:  types.Frequency(462550000),
-				Modulation: types.ModulationNFM,
+				Modulation: types.ModulationFM,
+				Bandwidth:  12500,
 				Tone: types.Tone{
 					Type:  types.ToneTypeNone,
 					Value: 0,
@@ -86,7 +89,8 @@ func (s *BC125PYTestSuite) TestDecode() {
 				Index:      1,
 				Name:       "Channel 1",
 				Frequency:  types.Frequency(462550000),
-				Modulation: types.ModulationNFM,
+				Modulation: types.ModulationFM,
+				Bandwidth:  12500,
 				Tone: types.Tone{
 					Type:  types.ToneTypeNone,
 					Value: 0,
@@ -94,6 +98,24 @@ func (s *BC125PYTestSuite) TestDecode() {
 				Delay:    2 * time.Second,
 				Lockout:  false,
 				Priority: true,
+			},
+		},
+		{
+			name:  "wideband_fm",
+			input: "1,Channel 1,162.5500,fm,none,2,unlocked,off\n",
+			expected: types.Channel{
+				Index:      1,
+				Name:       "Channel 1",
+				Frequency:  types.Frequency(162550000),
+				Modulation: types.ModulationFM,
+				Bandwidth:  25000,
+				Tone: types.Tone{
+					Type:  types.ToneTypeNone,
+					Value: 0,
+				},
+				Delay:    2 * time.Second,
+				Lockout:  false,
+				Priority: false,
 			},
 		},
 	}
@@ -124,12 +146,13 @@ func (s *BC125PYTestSuite) TestEncode() {
 		expected string
 	}{
 		{
-			name: "simple",
+			name: "narrowband",
 			input: types.Channel{
 				Index:      1,
 				Name:       "Channel 1",
 				Frequency:  types.Frequency(462550000),
-				Modulation: types.ModulationNFM,
+				Modulation: types.ModulationFM,
+				Bandwidth:  12500,
 				Tone: types.Tone{
 					Type:  types.ToneTypeNone,
 					Value: 0,
@@ -141,12 +164,31 @@ func (s *BC125PYTestSuite) TestEncode() {
 			expected: "1,Channel 1,462.5500,nfm,none,2,unlocked,off\n",
 		},
 		{
+			name: "wideband",
+			input: types.Channel{
+				Index:      1,
+				Name:       "Channel 1",
+				Frequency:  types.Frequency(162550000),
+				Modulation: types.ModulationFM,
+				Bandwidth:  25000,
+				Tone: types.Tone{
+					Type:  types.ToneTypeNone,
+					Value: 0,
+				},
+				Delay:    2 * time.Second,
+				Lockout:  false,
+				Priority: false,
+			},
+			expected: "1,Channel 1,162.5500,fm,none,2,unlocked,off\n",
+		},
+		{
 			name: "ctcss",
 			input: types.Channel{
 				Index:      1,
 				Name:       "Channel 1",
 				Frequency:  types.Frequency(462550000),
-				Modulation: types.ModulationNFM,
+				Modulation: types.ModulationFM,
+				Bandwidth:  12500,
 				Tone: types.Tone{
 					Type:  types.ToneTypeCTCSS,
 					Value: 1567,

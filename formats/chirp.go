@@ -8,17 +8,11 @@ import (
 	"github.com/s0lesurviv0r/reband/types"
 )
 
-var chirpToStandard = map[string]types.Modulation{
-	"AM": types.ModulationAM,
-	"FM": types.ModulationFM,
-}
-
-var standardToChirp = map[types.Modulation]string{}
-
-func init() {
-	for k, v := range chirpToStandard {
-		standardToChirp[v] = k
-	}
+// chirpBandwidth maps CHIRP mode strings to channel bandwidth in Hz.
+var chirpBandwidth = map[string]int{
+	"FM":  25000,
+	"NFM": 12500,
+	"AM":  0,
 }
 
 type Chirp struct {
@@ -66,9 +60,15 @@ func NewChirp() *Chirp {
 					return types.Channel{}, fmt.Errorf("failed to parse frequency: %w", err)
 				}
 
-				modulation, ok := chirpToStandard[row[headerMap["Mode"]]]
+				modeStr := row[headerMap["Mode"]]
+				bandwidth, ok := chirpBandwidth[modeStr]
 				if !ok {
-					return types.Channel{}, ErrUnsupportedModulation
+					return types.Channel{}, fmt.Errorf("unsupported modulation %q: %w", modeStr, ErrUnsupportedModulation)
+				}
+
+				modulation := types.ModulationFM
+				if modeStr == "AM" {
+					modulation = types.ModulationAM
 				}
 
 				tone := types.Tone{
@@ -105,22 +105,12 @@ func NewChirp() *Chirp {
 					return types.Channel{}, fmt.Errorf("failed to parse power: %w", err)
 				}
 
-				/*
-					RToneFreq:   row[6],
-					CToneFreq:   row[7],
-					DtcsCode:    row[8],
-					DtcsPolarity: row[9],
-					RxDtcsCode:  row[10],
-					CrossMode:   row[11],
-					TStep:       row[13],
-					Skip:        row[14],
-				*/
-
 				return types.Channel{
 					Index:      index,
 					Name:       row[1],
 					Frequency:  freq,
 					Modulation: modulation,
+					Bandwidth:  bandwidth,
 					Duplex:     duplex,
 					Offset:     offset,
 					Tone:       tone,
@@ -129,7 +119,68 @@ func NewChirp() *Chirp {
 				}, nil
 			},
 			rowEncoder: func(ch types.Channel) ([]string, error) {
-				return nil, nil
+				var mode string
+				switch ch.Modulation {
+				case types.ModulationAM:
+					mode = "AM"
+				case types.ModulationFM:
+					if ch.Bandwidth > 12500 {
+						mode = "FM"
+					} else {
+						mode = "NFM"
+					}
+				default:
+					return nil, fmt.Errorf("unsupported modulation %q: %w", ch.Modulation, ErrUnsupportedModulation)
+				}
+
+				duplexStr := ""
+				switch ch.Duplex {
+				case types.DuplexPlus:
+					duplexStr = "+"
+				case types.DuplexMinus:
+					duplexStr = "-"
+				}
+
+				toneField := ""
+				rToneFreq := "88.5"
+				cToneFreq := "88.5"
+				dtcsCode := "023"
+				dtcsPolarity := "NN"
+				rxDtcsCode := "023"
+
+				switch ch.Tone.Type {
+				case types.ToneTypeCTCSS:
+					toneField = "Tone"
+					rToneFreq = ch.Tone.CTCSS()
+				case types.ToneTypeDCS:
+					toneField = "DTCS"
+					dtcsCode = fmt.Sprintf("%03d", ch.Tone.Value)
+					rxDtcsCode = dtcsCode
+				}
+
+				return []string{
+					strconv.Itoa(ch.Index),
+					ch.Name,
+					fmt.Sprintf("%f", float64(ch.Frequency)/1e6),
+					duplexStr,
+					fmt.Sprintf("%f", float64(ch.Offset)/1e6),
+					toneField,
+					rToneFreq,
+					cToneFreq,
+					dtcsCode,
+					dtcsPolarity,
+					rxDtcsCode,
+					"Tone->Tone",
+					mode,
+					"5.00",
+					"",
+					fmt.Sprintf("%dW", ch.Power),
+					ch.Comment,
+					"",
+					"",
+					"",
+					"",
+				}, nil
 			},
 		},
 	}

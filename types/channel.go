@@ -88,6 +88,7 @@ type Channel struct {
 	Offset     Frequency
 	Tone       Tone
 	Modulation Modulation
+	Bandwidth  int // Hz
 	Power      int
 	Delay      time.Duration
 	Lockout    bool

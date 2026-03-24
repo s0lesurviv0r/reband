@@ -14,30 +14,41 @@ func ConvertCommand() *cobra.Command {
 	var outputPath string
 	var fromFormat string
 	var toFormat string
+	var onError string
 
 	cmd := &cobra.Command{
 		Use:   "convert",
 		Short: "Convert a channel list between formats",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			if inputPath == "" {
+				_ = cmd.Usage()
 				return fmt.Errorf("--input is required")
 			}
 			if fromFormat == "" {
+				_ = cmd.Usage()
 				return fmt.Errorf("--from is required")
 			}
 			if toFormat == "" {
+				_ = cmd.Usage()
 				return fmt.Errorf("--to is required")
+			}
+
+			policy, err := formats.ParseErrorPolicy(onError)
+			if err != nil {
+				return err
 			}
 
 			src, err := formats.Get(fromFormat)
 			if err != nil {
 				return err
 			}
+			src.SetErrorPolicy(policy)
 
 			dst, err := formats.Get(toFormat)
 			if err != nil {
 				return err
 			}
+			dst.SetErrorPolicy(policy)
 
 			reader, err := os.Open(inputPath)
 			if err != nil {
@@ -68,6 +79,7 @@ func ConvertCommand() *cobra.Command {
 	cmd.Flags().StringVar(&outputPath, "output", "", "Path to output file (defaults to stdout)")
 	cmd.Flags().StringVar(&fromFormat, "from", "", "Source format")
 	cmd.Flags().StringVar(&toFormat, "to", "", "Destination format")
+	cmd.Flags().StringVar(&onError, "on-error", "exit", "How to handle row errors: exit, skip, or empty")
 
 	return cmd
 }

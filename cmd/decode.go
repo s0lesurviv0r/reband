@@ -13,23 +13,31 @@ import (
 func DecodeCommand() *cobra.Command {
 	var path string
 	var format string
+	var onError string
 
 	cmd := &cobra.Command{
 		Use:   "decode",
 		Short: "Decode a channel list",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			if path == "" {
+				_ = cmd.Usage()
 				return fmt.Errorf("--path is required")
 			}
-
 			if format == "" {
+				_ = cmd.Usage()
 				return fmt.Errorf("--format is required")
+			}
+
+			policy, err := formats.ParseErrorPolicy(onError)
+			if err != nil {
+				return err
 			}
 
 			formater, err := formats.Get(format)
 			if err != nil {
 				return err
 			}
+			formater.SetErrorPolicy(policy)
 
 			reader, err := os.Open(path)
 			if err != nil {
@@ -67,6 +75,7 @@ func DecodeCommand() *cobra.Command {
 
 	cmd.Flags().StringVar(&path, "path", "", "Path to frequency list")
 	cmd.Flags().StringVar(&format, "format", "", "Format to decode from")
+	cmd.Flags().StringVar(&onError, "on-error", "exit", "How to handle row errors: exit, skip, or empty")
 
 	return cmd
 }

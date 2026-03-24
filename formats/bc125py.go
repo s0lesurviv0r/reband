@@ -8,18 +8,11 @@ import (
 	"github.com/s0lesurviv0r/reband/types"
 )
 
-var bc125pyToStandard = map[string]types.Modulation{
-	"nfm": types.ModulationNFM,
-	"am":  types.ModulationAM,
-	"fm":  types.ModulationFM,
-}
-
-var standarToBc125py = map[types.Modulation]string{}
-
-func init() {
-	for k, v := range bc125pyToStandard {
-		standarToBc125py[v] = k
-	}
+// bc125pyBandwidth maps BC125PY modulation strings to channel bandwidth in Hz.
+var bc125pyBandwidth = map[string]int{
+	"nfm": 12500,
+	"fm":  25000,
+	"am":  0,
 }
 
 type BC125PY struct {
@@ -44,9 +37,15 @@ func NewBC125PY() *BC125PY {
 					return types.Channel{}, fmt.Errorf("failed to parse frequency: %w", err)
 				}
 
-				modulation, ok := bc125pyToStandard[row[headerMap["Modulation"]]]
+				modStr := row[headerMap["Modulation"]]
+				bandwidth, ok := bc125pyBandwidth[modStr]
 				if !ok {
-					return types.Channel{}, ErrUnsupportedModulation
+					return types.Channel{}, fmt.Errorf("unsupported modulation %q: %w", modStr, ErrUnsupportedModulation)
+				}
+
+				modulation := types.ModulationFM
+				if modStr == "am" {
+					modulation = types.ModulationAM
 				}
 
 				tone := types.Tone{
@@ -73,6 +72,7 @@ func NewBC125PY() *BC125PY {
 					Name:       row[headerMap["Name"]],
 					Frequency:  freq,
 					Modulation: modulation,
+					Bandwidth:  bandwidth,
 					Tone:       tone,
 					Delay:      delay,
 					Lockout:    row[headerMap["Lockout"]] == "locked",
@@ -80,9 +80,18 @@ func NewBC125PY() *BC125PY {
 				}, nil
 			},
 			rowEncoder: func(channel types.Channel) ([]string, error) {
-				modulation, ok := standarToBc125py[channel.Modulation]
-				if !ok {
-					return nil, ErrUnsupportedModulation
+				var modStr string
+				switch channel.Modulation {
+				case types.ModulationAM:
+					modStr = "am"
+				case types.ModulationFM:
+					if channel.Bandwidth > 12500 {
+						modStr = "fm"
+					} else {
+						modStr = "nfm"
+					}
+				default:
+					return nil, fmt.Errorf("unsupported modulation %q: %w", channel.Modulation, ErrUnsupportedModulation)
 				}
 
 				ctcss := "none"
@@ -104,7 +113,7 @@ func NewBC125PY() *BC125PY {
 					strconv.Itoa(channel.Index),
 					channel.Name,
 					channel.Frequency.String(),
-					modulation,
+					modStr,
 					ctcss,
 					strconv.Itoa(int(channel.Delay.Seconds())),
 					lockout,

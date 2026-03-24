@@ -4,14 +4,20 @@ import (
 	"encoding/csv"
 	"fmt"
 	"io"
+	"os"
 
 	"github.com/s0lesurviv0r/reband/types"
 )
 
 type GenericCSV struct {
-	header     []string
-	rowEncoder func(channel types.Channel) ([]string, error)
-	rowDecoder func(record []string, headerMap map[string]int) (types.Channel, error)
+	header      []string
+	rowEncoder  func(channel types.Channel) ([]string, error)
+	rowDecoder  func(record []string, headerMap map[string]int) (types.Channel, error)
+	errorPolicy ErrorPolicy
+}
+
+func (f *GenericCSV) SetErrorPolicy(p ErrorPolicy) {
+	f.errorPolicy = p
 }
 
 func (f *GenericCSV) Decode(reader io.Reader) ([]types.Channel, error) {
@@ -37,16 +43,42 @@ func (f *GenericCSV) Decode(reader io.Reader) ([]types.Channel, error) {
 		}
 	}
 
-	channels := make([]types.Channel, len(records)-1)
+	channels := make([]types.Channel, 0, len(records)-1)
 	for i, record := range records[1:] { // Skip header
+		rowNum := i + 1
+
 		if len(record) < len(f.header) {
-			return nil, fmt.Errorf("row %d has %d columns, expected %d", i+1, len(record), len(f.header))
+			rowErr := fmt.Errorf("row %d has %d columns, expected %d", rowNum, len(record), len(f.header))
+			switch f.errorPolicy {
+			case ErrorPolicySkip:
+				fmt.Fprintf(os.Stderr, "warning: skipping row %d: %v\n", rowNum, rowErr)
+				continue
+			case ErrorPolicyEmpty:
+				fmt.Fprintf(os.Stderr, "warning: row %d set to empty: %v\n", rowNum, rowErr)
+				channels = append(channels, types.Channel{})
+				continue
+			default:
+				return nil, rowErr
+			}
 		}
+
 		channel, err := f.rowDecoder(record, headerMap)
 		if err != nil {
-			return nil, fmt.Errorf("row %d: %w", i+1, err)
+			rowErr := fmt.Errorf("row %d: %w", rowNum, err)
+			switch f.errorPolicy {
+			case ErrorPolicySkip:
+				fmt.Fprintf(os.Stderr, "warning: skipping row %d: %v\n", rowNum, err)
+				continue
+			case ErrorPolicyEmpty:
+				fmt.Fprintf(os.Stderr, "warning: row %d set to empty: %v\n", rowNum, err)
+				channels = append(channels, types.Channel{})
+				continue
+			default:
+				return nil, rowErr
+			}
 		}
-		channels[i] = channel
+
+		channels = append(channels, channel)
 	}
 
 	return channels, nil
@@ -60,14 +92,24 @@ func (f *GenericCSV) Encode(writer io.Writer, channels []types.Channel) error {
 		return err
 	}
 
-	for _, channel := range channels {
+	emptyRow := make([]string, len(f.header))
+
+	for i, channel := range channels {
 		record, err := f.rowEncoder(channel)
 		if err != nil {
-			return err
+			switch f.errorPolicy {
+			case ErrorPolicySkip:
+				fmt.Fprintf(os.Stderr, "warning: skipping channel %d: %v\n", i+1, err)
+				continue
+			case ErrorPolicyEmpty:
+				fmt.Fprintf(os.Stderr, "warning: channel %d set to empty: %v\n", i+1, err)
+				record = emptyRow
+			default:
+				return err
+			}
 		}
 
-		err = csvWriter.Write(record)
-		if err != nil {
+		if err := csvWriter.Write(record); err != nil {
 			return err
 		}
 	}

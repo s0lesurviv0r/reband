@@ -4,7 +4,6 @@ type Modulation int
 
 const (
 	ModulationFM Modulation = iota
-	ModulationNFM
 	ModulationAM
 	ModulationWFM
 	ModulationLSB
@@ -24,7 +23,6 @@ const (
 
 var modulationNames = map[Modulation]string{
 	ModulationFM:     "FM",
-	ModulationNFM:    "NFM",
 	ModulationAM:     "AM",
 	ModulationWFM:    "WFM",
 	ModulationLSB:    "LSB",

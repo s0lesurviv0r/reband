@@ -10,7 +10,6 @@ import (
 
 var modulationToString = map[types.Modulation]string{
 	types.ModulationFM:     "fm",
-	types.ModulationNFM:    "nfm",
 	types.ModulationAM:     "am",
 	types.ModulationWFM:    "wfm",
 	types.ModulationLSB:    "lsb",
@@ -47,7 +46,7 @@ func NewRebandCSV() *RebandCSV {
 				"Index", "Name", "AlphaTag", "Comment",
 				"Frequency", "Duplex", "Offset",
 				"ToneType", "ToneValue",
-				"Modulation", "Power", "Delay", "Lockout", "Priority",
+				"Modulation", "Bandwidth", "Power", "Delay", "Lockout", "Priority",
 			},
 			rowDecoder: func(row []string, headerMap map[string]int) (types.Channel, error) {
 				index, err := strconv.Atoi(row[headerMap["Index"]])
@@ -91,8 +90,14 @@ func NewRebandCSV() *RebandCSV {
 
 				modulation, ok := stringToModulation[row[headerMap["Modulation"]]]
 				if !ok {
-					return types.Channel{}, ErrUnsupportedModulation
+					return types.Channel{}, fmt.Errorf("unsupported modulation %q: %w", row[headerMap["Modulation"]], ErrUnsupportedModulation)
 				}
+
+				bwKHz, err := strconv.ParseFloat(row[headerMap["Bandwidth"]], 64)
+				if err != nil {
+					return types.Channel{}, fmt.Errorf("failed to parse bandwidth: %w", err)
+				}
+				bandwidth := int(bwKHz * 1000)
 
 				power, err := strconv.Atoi(row[headerMap["Power"]])
 				if err != nil {
@@ -114,6 +119,7 @@ func NewRebandCSV() *RebandCSV {
 					Offset:     offset,
 					Tone:       tone,
 					Modulation: modulation,
+					Bandwidth:  bandwidth,
 					Power:      power,
 					Delay:      delay,
 					Lockout:    row[headerMap["Lockout"]] == "true",
@@ -123,7 +129,7 @@ func NewRebandCSV() *RebandCSV {
 			rowEncoder: func(ch types.Channel) ([]string, error) {
 				modStr, ok := modulationToString[ch.Modulation]
 				if !ok {
-					return nil, ErrUnsupportedModulation
+					return nil, fmt.Errorf("unsupported modulation %q: %w", ch.Modulation, ErrUnsupportedModulation)
 				}
 
 				duplexStr := ""
@@ -155,6 +161,8 @@ func NewRebandCSV() *RebandCSV {
 					priority = "true"
 				}
 
+				bwKHz := fmt.Sprintf("%.1f", float64(ch.Bandwidth)/1000)
+
 				return []string{
 					strconv.Itoa(ch.Index),
 					ch.Name,
@@ -166,6 +174,7 @@ func NewRebandCSV() *RebandCSV {
 					toneType,
 					toneValue,
 					modStr,
+					bwKHz,
 					strconv.Itoa(ch.Power),
 					strconv.Itoa(int(ch.Delay.Seconds())),
 					lockout,
