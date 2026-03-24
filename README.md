@@ -94,7 +94,6 @@ reband convert --from uv-pro --to reband --input channels.csv --split-output-siz
 | `uv-pro` | UV-Pro | ✓ | ✓ |
 | `radioreference` | RadioReference | ✓ | ✓ |
 | `sdrtrunk` | SDRTrunk | | |
-| `gqrx` | GQRX | | |
 
 ### Reband CSV format
 
