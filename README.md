@@ -92,7 +92,7 @@ reband convert --from uv-pro --to reband --input channels.csv --split-output-siz
 | `bc125py` | Uniden BC125AT/BC125XLT scanner | ✓ | ✓ |
 | `chirp` | CHIRP radio programming software | ✓ | ✓ |
 | `uv-pro` | UV-Pro | ✓ | ✓ |
-| `radioreference` | RadioReference | | |
+| `radioreference` | RadioReference | ✓ | ✓ |
 | `sdrtrunk` | SDRTrunk | | |
 | `gqrx` | GQRX | | |
 

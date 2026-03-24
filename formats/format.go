@@ -38,7 +38,8 @@ var formatFactories = map[string]func() Format{
 	"bc125py": func() Format { return NewBC125PY() },
 	"chirp":   func() Format { return NewChirp() },
 	"reband":  func() Format { return NewRebandCSV() },
-	"uv-pro":  func() Format { return NewUVPro() },
+	"uv-pro":         func() Format { return NewUVPro() },
+	"radioreference": func() Format { return NewRadioReference() },
 }
 
 func Get(name string) (Format, error) {
