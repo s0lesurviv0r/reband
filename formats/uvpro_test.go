@@ -26,6 +26,7 @@ func TestUVProDecode(t *testing.T) {
 			name: "simplex_no_tone",
 			row:  `GMRS1,462562500,462562500,0,0,H,25000,1,0,0,1,0,0,0,0`,
 			want: types.Channel{
+				Index: 1,
 				Name:       "GMRS1",
 				AlphaTag:   "GMRS1",
 				Frequency:  462562500,
@@ -42,6 +43,7 @@ func TestUVProDecode(t *testing.T) {
 			name: "simplex_ctcss_tone",
 			row:  `"ISS RPT UL",145990000,145990000,8850,6700,H,25000,1,0,0,1,0,0,0,0`,
 			want: types.Channel{
+				Index: 1,
 				Name:       "ISS RPT UL",
 				AlphaTag:   "ISS RPT UL",
 				Frequency:  145990000,
@@ -58,6 +60,7 @@ func TestUVProDecode(t *testing.T) {
 			name: "positive_offset",
 			row:  `"OC RACES",146295000,146895000,8850,13650,H,25000,1,0,0,1,0,0,0,0`,
 			want: types.Channel{
+				Index: 1,
 				Name:       "OC RACES",
 				AlphaTag:   "OC RACES",
 				Frequency:  146895000,
@@ -74,6 +77,7 @@ func TestUVProDecode(t *testing.T) {
 			name: "am_modulation",
 			row:  `"SNA ATIS",126000000,126000000,0,0,H,25000,1,0,0,1,0,0,1,1`,
 			want: types.Channel{
+				Index: 1,
 				Name:       "SNA ATIS",
 				AlphaTag:   "SNA ATIS",
 				Frequency:  126000000,
@@ -90,6 +94,7 @@ func TestUVProDecode(t *testing.T) {
 			name: "locked_out",
 			row:  `LOCKED,462562500,462562500,0,0,H,25000,0,0,0,1,0,0,0,0`,
 			want: types.Channel{
+				Index: 1,
 				Name:       "LOCKED",
 				AlphaTag:   "LOCKED",
 				Frequency:  462562500,
@@ -106,6 +111,7 @@ func TestUVProDecode(t *testing.T) {
 			name: "ctcss_rounding",
 			row:  `"BDF KE6TZG",146985000,146385000,8850,14619,H,25000,1,0,0,1,0,0,0,0`,
 			want: types.Channel{
+				Index: 1,
 				Name:       "BDF KE6TZG",
 				AlphaTag:   "BDF KE6TZG",
 				Frequency:  146385000,

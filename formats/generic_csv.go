@@ -14,6 +14,7 @@ type GenericCSV struct {
 	rowEncoder  func(channel types.Channel) ([]string, error)
 	rowDecoder  func(record []string, headerMap map[string]int) (types.Channel, error)
 	errorPolicy ErrorPolicy
+	autoIndex   bool // assign 1-based Index after decoding when format has no index column
 }
 
 func (f *GenericCSV) SetErrorPolicy(p ErrorPolicy) {
@@ -79,6 +80,12 @@ func (f *GenericCSV) Decode(reader io.Reader) ([]types.Channel, error) {
 		}
 
 		channels = append(channels, channel)
+	}
+
+	if f.autoIndex {
+		for i := range channels {
+			channels[i].Index = i + 1
+		}
 	}
 
 	return channels, nil

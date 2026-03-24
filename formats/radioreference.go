@@ -35,6 +35,7 @@ type RadioReference struct {
 func NewRadioReference() *RadioReference {
 	return &RadioReference{
 		GenericCSV{
+			autoIndex: true,
 			header: []string{
 				"Frequency Output",
 				"Frequency Input",

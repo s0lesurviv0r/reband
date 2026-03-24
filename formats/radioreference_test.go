@@ -22,6 +22,7 @@ func TestRadioReferenceDecode(t *testing.T) {
 			name: "simplex_fmn_no_tone",
 			row:  `163.10000,0.00000,,Common Federal Wide Area Common Use,Itinerant Analog,Fed 163.1000 A,,FMN,BM,Federal`,
 			want: types.Channel{
+				Index: 1,
 				Name:       "Itinerant Analog",
 				AlphaTag:   "Fed 163.1000 A",
 				Comment:    "Common Federal Wide Area Common Use",
@@ -37,6 +38,7 @@ func TestRadioReferenceDecode(t *testing.T) {
 			name: "simplex_p25",
 			row:  `163.10000,0.00000,,Common Federal Wide Area Common Use,Itinerant Digital,Fed 163.1000 D,,P25,BM,Federal`,
 			want: types.Channel{
+				Index: 1,
 				Name:       "Itinerant Digital",
 				AlphaTag:   "Fed 163.1000 D",
 				Comment:    "Common Federal Wide Area Common Use",
@@ -52,6 +54,7 @@ func TestRadioReferenceDecode(t *testing.T) {
 			name: "positive_offset_duplex",
 			row:  `409.05000,418.05000,,Common Federal Wide Area Common Use,Itinerant Digital,Fed 409.0500 D,,P25,RM,Federal`,
 			want: types.Channel{
+				Index: 1,
 				Name:       "Itinerant Digital",
 				AlphaTag:   "Fed 409.0500 D",
 				Comment:    "Common Federal Wide Area Common Use",
@@ -67,6 +70,7 @@ func TestRadioReferenceDecode(t *testing.T) {
 			name: "ctcss_tone",
 			row:  `146.94000,147.54000,,Local Repeater,2m Repeater,2M RPT,88.5,FMN,RM,Amateur`,
 			want: types.Channel{
+				Index: 1,
 				Name:       "2m Repeater",
 				AlphaTag:   "2M RPT",
 				Comment:    "Local Repeater",
@@ -82,6 +86,7 @@ func TestRadioReferenceDecode(t *testing.T) {
 			name: "dcs_tone",
 			row:  `462.55000,0.00000,,GMRS,GMRS Ch1,GMRS 1,D023,FM,BM,GMRS`,
 			want: types.Channel{
+				Index: 1,
 				Name:       "GMRS Ch1",
 				AlphaTag:   "GMRS 1",
 				Comment:    "GMRS",
@@ -97,6 +102,7 @@ func TestRadioReferenceDecode(t *testing.T) {
 			name: "negative_offset",
 			row:  `147.09000,146.49000,,Local Repeater,2m Repeater,2M RPT,100.0,FMN,RM,Amateur`,
 			want: types.Channel{
+				Index: 1,
 				Name:       "2m Repeater",
 				AlphaTag:   "2M RPT",
 				Comment:    "Local Repeater",

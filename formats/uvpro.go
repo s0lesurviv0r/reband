@@ -14,6 +14,7 @@ type UVPro struct {
 func NewUVPro() *UVPro {
 	return &UVPro{
 		GenericCSV{
+			autoIndex: true,
 			header: []string{
 				"title",
 				"tx_freq",
