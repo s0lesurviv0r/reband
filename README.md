@@ -37,6 +37,7 @@ freq-conv decode --format <format> --path <file>
 |---|---|---|
 | `--format` | yes | Source format (see supported formats below) |
 | `--path` | yes | Path to the input file |
+| `--on-error` | no | How to handle row errors: `exit` (default), `skip`, or `empty` |
 
 **Example:**
 ```sh
@@ -51,6 +52,7 @@ Convert a channel list from one format to another.
 
 ```sh
 freq-conv convert --from <format> --to <format> --input <file> [--output <file>]
+freq-conv convert --from <format> --to <format> --input <file> --split-output-size <n> --output-dir <dir>
 ```
 
 | Flag | Required | Description |
@@ -59,6 +61,11 @@ freq-conv convert --from <format> --to <format> --input <file> [--output <file>]
 | `--to` | yes | Destination format |
 | `--input` | yes | Path to the input file |
 | `--output` | no | Path to the output file (defaults to stdout) |
+| `--split-output-size` | no | Split output into multiple files with at most this many channels each |
+| `--output-dir` | no | Directory to write split output files (required with `--split-output-size`) |
+| `--on-error` | no | How to handle row errors: `exit` (default), `skip`, or `empty` |
+
+When `--split-output-size` is set, output files are written to `--output-dir` named `01.csv`, `02.csv`, etc., zero-padded to the number of digits needed. `--output` and `--split-output-size` are mutually exclusive.
 
 **Examples:**
 ```sh
@@ -70,6 +77,9 @@ freq-conv convert --from chirp --to reband --input chirp.csv
 
 # Convert Reband CSV to BC125PY
 freq-conv convert --from reband --to bc125py --input channels.csv --output scanner.csv
+
+# Convert UV-Pro CSV to Reband CSV, split into files of 50 channels each
+freq-conv convert --from uv-pro --to reband --input channels.csv --split-output-size 50 --output-dir out/
 ```
 
 ---
@@ -144,7 +154,3 @@ This represents a wideband FM repeater on 146.940 MHz with a +600 kHz offset, CT
 
 ---
 
-## Notes
-
-- UV-PRO should allow an option to split into multiple CSVs, one per channel group
-- Generally the CLI should allow splitting into smaller CSVs per request
