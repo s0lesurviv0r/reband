@@ -8,11 +8,24 @@ import (
 	"github.com/s0lesurviv0r/reband/types"
 )
 
-// chirpBandwidth maps CHIRP mode strings to channel bandwidth in Hz.
-var chirpBandwidth = map[string]int{
-	"FM":  25000,
-	"NFM": 12500,
-	"AM":  0,
+// chirpModeInfo holds the modulation and bandwidth for a CHIRP mode string.
+type chirpModeInfo struct {
+	modulation types.Modulation
+	bandwidth  int
+}
+
+// chirpModes maps CHIRP mode strings to modulation and bandwidth.
+var chirpModes = map[string]chirpModeInfo{
+	"FM":  {types.ModulationFM, 25000},
+	"NFM": {types.ModulationFM, 12500},
+	"AM":  {types.ModulationAM, 0},
+	"USB": {types.ModulationUSB, 0},
+	"LSB": {types.ModulationLSB, 0},
+	"CW":  {types.ModulationCW, 0},
+	"CWR": {types.ModulationCW, 0},
+	"DV":  {types.ModulationDSTAR, 0},
+	"WFM": {types.ModulationWFM, 0},
+	"P25": {types.ModulationP25, 12500},
 }
 
 type Chirp struct {
@@ -61,15 +74,12 @@ func NewChirp() *Chirp {
 				}
 
 				modeStr := row[headerMap["Mode"]]
-				bandwidth, ok := chirpBandwidth[modeStr]
+				modeInfo, ok := chirpModes[modeStr]
 				if !ok {
 					return types.Channel{}, fmt.Errorf("unsupported modulation %q: %w", modeStr, ErrUnsupportedModulation)
 				}
-
-				modulation := types.ModulationFM
-				if modeStr == "AM" {
-					modulation = types.ModulationAM
-				}
+				modulation := modeInfo.modulation
+				bandwidth := modeInfo.bandwidth
 
 				tone := types.Tone{
 					Type:  types.ToneTypeNone,
@@ -129,6 +139,18 @@ func NewChirp() *Chirp {
 					} else {
 						mode = "NFM"
 					}
+				case types.ModulationUSB:
+					mode = "USB"
+				case types.ModulationLSB:
+					mode = "LSB"
+				case types.ModulationCW:
+					mode = "CW"
+				case types.ModulationDSTAR:
+					mode = "DV"
+				case types.ModulationWFM:
+					mode = "WFM"
+				case types.ModulationP25:
+					mode = "P25"
 				default:
 					return nil, fmt.Errorf("unsupported modulation %q: %w", ch.Modulation, ErrUnsupportedModulation)
 				}
