@@ -3,7 +3,8 @@ package types
 type Modulation int
 
 const (
-	ModulationFM Modulation = iota
+	ModulationAuto Modulation = iota
+	ModulationFM
 	ModulationAM
 	ModulationWFM
 	ModulationLSB
@@ -22,6 +23,7 @@ const (
 )
 
 var modulationNames = map[Modulation]string{
+	ModulationAuto:   "auto",
 	ModulationFM:     "FM",
 	ModulationAM:     "AM",
 	ModulationWFM:    "WFM",

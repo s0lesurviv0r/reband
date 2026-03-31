@@ -125,6 +125,7 @@ A sample file is provided at [`samples/reband.csv`](samples/reband.csv).
 
 | Value | Mode | Notes |
 |---|---|---|
+| `auto` | Auto | Scanner automatically detects modulation |
 | `fm` | FM | Use `Bandwidth` to distinguish narrowband (`12.5` kHz) from wideband (`25.0` kHz) |
 | `am` | AM | Used for aviation and some shortwave bands |
 | `wfm` | Wide FM | Broadcast FM radio |

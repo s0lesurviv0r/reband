@@ -10,9 +10,10 @@ import (
 
 // bc125pyBandwidth maps BC125PY modulation strings to channel bandwidth in Hz.
 var bc125pyBandwidth = map[string]int{
-	"nfm": 12500,
-	"fm":  25000,
-	"am":  0,
+	"nfm":  12500,
+	"fm":   25000,
+	"am":   0,
+	"auto": 0,
 }
 
 type BC125PY struct {
@@ -43,9 +44,14 @@ func NewBC125PY() *BC125PY {
 					return types.Channel{}, fmt.Errorf("unsupported modulation %q: %w", modStr, ErrUnsupportedModulation)
 				}
 
-				modulation := types.ModulationFM
-				if modStr == "am" {
+				var modulation types.Modulation
+				switch modStr {
+				case "am":
 					modulation = types.ModulationAM
+				case "auto":
+					modulation = types.ModulationAuto
+				default:
+					modulation = types.ModulationFM
 				}
 
 				tone := types.Tone{
@@ -82,6 +88,8 @@ func NewBC125PY() *BC125PY {
 			rowEncoder: func(channel types.Channel) ([]string, error) {
 				var modStr string
 				switch channel.Modulation {
+				case types.ModulationAuto:
+					modStr = "auto"
 				case types.ModulationAM:
 					modStr = "am"
 				case types.ModulationFM:

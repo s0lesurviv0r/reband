@@ -9,6 +9,7 @@ import (
 )
 
 var modulationToString = map[types.Modulation]string{
+	types.ModulationAuto:   "auto",
 	types.ModulationFM:     "fm",
 	types.ModulationAM:     "am",
 	types.ModulationWFM:    "wfm",
