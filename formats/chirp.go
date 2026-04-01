@@ -95,6 +95,13 @@ func NewChirp() *Chirp {
 						return types.Channel{}, fmt.Errorf("failed to parse CTCSS tone: %w", err)
 					}
 					tone.Value = int(v * 10)
+				case "DTCS":
+					code, err := strconv.Atoi(row[headerMap["DtcsCode"]])
+					if err != nil {
+						return types.Channel{}, fmt.Errorf("failed to parse DCS code: %w", err)
+					}
+					tone.Type = types.ToneTypeDCS
+					tone.Value = code
 				}
 
 				duplex := types.DuplexNone
