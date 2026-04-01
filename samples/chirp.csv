@@ -1,0 +1,13 @@
+Location,Name,Frequency,Duplex,Offset,Tone,rToneFreq,cToneFreq,DtcsCode,DtcsPolarity,RxDtcsCode,CrossMode,Mode,TStep,Skip,Power,Comment,URCALL,RPT1CALL,RPT2CALL,DVCODE
+0,NOAA WX1,162.400000,,0.000000,,88.5,88.5,023,NN,023,Tone->Tone,FM,5.00,,0W,NOAA Weather Radio,,,,
+1,NOAA WX2,162.425000,,0.000000,,88.5,88.5,023,NN,023,Tone->Tone,FM,5.00,,0W,NOAA Weather Radio,,,,
+2,NOAA WX3,162.450000,,0.000000,,88.5,88.5,023,NN,023,Tone->Tone,FM,5.00,,0W,NOAA Weather Radio,,,,
+3,VHF Call,146.520000,,0.000000,,88.5,88.5,023,NN,023,Tone->Tone,FM,5.00,,5W,National VHF Calling,,,,
+4,2m Repeater,146.940000,-,0.600000,Tone,100.0,88.5,023,NN,023,Tone->Tone,FM,5.00,,50W,Local 2m repeater,,,,
+5,70cm RPT,442.100000,+,5.000000,Tone,131.8,88.5,023,NN,023,Tone->Tone,FM,5.00,,50W,Local 70cm repeater,,,,
+6,GMRS Ch1,462.550000,,0.000000,Tone,156.7,88.5,023,NN,023,Tone->Tone,NFM,5.00,,5W,General Mobile Radio Service,,,,
+7,FRS Ch1,462.562500,,0.000000,,88.5,88.5,023,NN,023,Tone->Tone,NFM,5.00,,2W,Family Radio Service,,,,
+8,Marine 16,156.800000,,0.000000,,88.5,88.5,023,NN,023,Tone->Tone,FM,5.00,,25W,Marine Distress and Calling,,,,
+9,Marine 22A,157.100000,,0.000000,,88.5,88.5,023,NN,023,Tone->Tone,FM,5.00,,25W,USCG Working Channel,,,,
+10,AM Aircraft,121.500000,,0.000000,,88.5,88.5,023,NN,023,Tone->Tone,AM,5.00,,0W,Aviation Emergency,,,,
+11,2m DCS RPT,147.195000,+,0.600000,DTCS,88.5,88.5,071,NN,071,Tone->Tone,FM,5.00,,50W,2m DCS Repeater,,,,

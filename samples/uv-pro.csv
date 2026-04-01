@@ -1,0 +1,7 @@
+title,tx_freq,rx_freq,tx_sub_audio(CTCSS=freq/DCS=number),rx_sub_audio(CTCSS=freq/DCS=number),tx_power(H/M/L),bandwidth(12500/25000),scan(0=OFF/1=ON),talk around(0=OFF/1=ON),pre_de_emph_bypass(0=OFF/1=ON),sign(0=OFF/1=ON),tx_dis(0=OFF/1=ON),mute(0=OFF/1=ON),rx_modulation(0=FM/1=AM),tx_modulation(0=FM/1=AM)
+VHF Call,146520000,146520000,0,0,H,25000,1,0,0,1,0,0,0,0
+2m Repeater,146340000,146940000,10000,10000,H,25000,1,0,0,1,0,0,0,0
+70cm RPT,447100000,442100000,13180,13180,H,25000,1,0,0,1,0,0,0,0
+GMRS Ch1,462550000,462550000,15670,15670,H,12500,1,0,0,1,0,0,0,0
+FRS Ch1,462562500,462562500,0,0,M,12500,1,0,0,1,0,0,0,0
+2m DCS RPT,147795000,147195000,71,71,H,25000,1,0,0,1,0,0,0,0

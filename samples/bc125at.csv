@@ -1,0 +1,14 @@
+Index,Name,Frequency (MHz),Modulation,CTCSS,Delay (sec),Lockout,Priority
+1,NOAA WX1,162.4000,fm,none,2,unlocked,off
+2,NOAA WX2,162.4250,fm,none,2,unlocked,off
+3,NOAA WX3,162.4500,fm,none,2,unlocked,off
+4,VHF Call,146.5200,fm,none,2,unlocked,on
+5,2m Repeater,146.9400,fm,ctcss_100.0,2,unlocked,off
+6,70cm Repeater,442.1000,fm,ctcss_131.8,2,unlocked,off
+7,GMRS Ch1,462.5500,nfm,ctcss_156.7,2,unlocked,off
+8,FRS Ch1,462.5625,nfm,none,2,unlocked,off
+9,Marine 16,156.8000,fm,none,2,unlocked,on
+10,Marine 22A,157.1000,fm,none,2,unlocked,off
+11,AM Aircraft,121.5000,am,none,2,unlocked,on
+12,2m DCS RPT,147.1950,fm,none,2,unlocked,off
+13,Locked Out,155.3400,nfm,none,2,locked,off
