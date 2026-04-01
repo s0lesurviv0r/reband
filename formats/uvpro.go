@@ -92,6 +92,10 @@ func NewUVPro() *UVPro {
 				}, nil
 			},
 			rowEncoder: func(ch types.Channel) ([]string, error) {
+				if err := uvproValidateFrequency(ch.Frequency); err != nil {
+					return nil, err
+				}
+
 				rxFreq := int64(ch.Frequency)
 				var txFreq int64
 				switch ch.Duplex {
@@ -101,6 +105,10 @@ func NewUVPro() *UVPro {
 					txFreq = rxFreq - int64(ch.Offset)
 				default:
 					txFreq = rxFreq
+				}
+
+				if err := uvproValidateFrequency(types.Frequency(txFreq)); err != nil {
+					return nil, err
 				}
 
 				var rxMod, txMod string
@@ -184,6 +192,16 @@ func uvproDecodePower(s string) int {
 	default:
 		return 0
 	}
+}
+
+// uvproValidateFrequency checks that a frequency is within UV-Pro supported ranges:
+// VHF 136–174 MHz or UHF 400–520 MHz.
+func uvproValidateFrequency(f types.Frequency) error {
+	mhz := float64(f) / 1e6
+	if (mhz >= 136 && mhz <= 174) || (mhz >= 400 && mhz <= 520) {
+		return nil
+	}
+	return fmt.Errorf("frequency %.4f MHz is outside UV-Pro supported ranges (VHF: 136–174 MHz, UHF: 400–520 MHz)", mhz)
 }
 
 // uvproEncodePower maps watts to UV-Pro power level.

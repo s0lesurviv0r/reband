@@ -176,8 +176,8 @@ func TestUVProEncode(t *testing.T) {
 		{
 			name: "am_locked_out",
 			channel: types.Channel{
-				Name:       "SNA ATIS",
-				Frequency:  126000000,
+				Name:       "Air Guard",
+				Frequency:  148150000,
 				Duplex:     types.DuplexNone,
 				Tone:       types.Tone{Type: types.ToneTypeNone},
 				Modulation: types.ModulationAM,
@@ -185,7 +185,7 @@ func TestUVProEncode(t *testing.T) {
 				Power:      2,
 				Lockout:    true,
 			},
-			want: uvproHeader + "\nSNA ATIS,126000000,126000000,0,0,M,25000,0,0,0,1,0,0,1,1\n",
+			want: uvproHeader + "\nAir Guard,148150000,148150000,0,0,M,25000,0,0,0,1,0,0,1,1\n",
 		},
 	}
 
