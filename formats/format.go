@@ -32,6 +32,10 @@ type Format interface {
 	Decode(io.Reader) ([]types.Channel, error)
 	Encode(io.Writer, []types.Channel) error
 	SetErrorPolicy(ErrorPolicy)
+	// FilterChannels applies the error policy to the encode phase without
+	// writing any output. Used to pre-filter channels before splitting so
+	// that chunk sizes reflect the valid channel count.
+	FilterChannels([]types.Channel) ([]types.Channel, error)
 }
 
 var formatFactories = map[string]func() Format{

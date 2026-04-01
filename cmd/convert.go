@@ -104,6 +104,18 @@ func ConvertCommand() *cobra.Command {
 }
 
 func encodeChunks(channels []types.Channel, size int, dir string, toFormat string, policy formats.ErrorPolicy) error {
+	// Pre-filter channels through the encoder before splitting so that chunk
+	// sizes reflect the valid channel count, not the raw decoded count.
+	dst, err := formats.Get(toFormat)
+	if err != nil {
+		return err
+	}
+	dst.SetErrorPolicy(policy)
+	channels, err = dst.FilterChannels(channels)
+	if err != nil {
+		return err
+	}
+
 	numFiles := (len(channels) + size - 1) / size
 	digits := len(strconv.Itoa(numFiles))
 

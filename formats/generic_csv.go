@@ -91,6 +91,27 @@ func (f *GenericCSV) Decode(reader io.Reader) ([]types.Channel, error) {
 	return channels, nil
 }
 
+func (f *GenericCSV) FilterChannels(channels []types.Channel) ([]types.Channel, error) {
+	result := make([]types.Channel, 0, len(channels))
+	for i, ch := range channels {
+		_, err := f.rowEncoder(ch)
+		if err != nil {
+			switch f.errorPolicy {
+			case ErrorPolicySkip:
+				fmt.Fprintf(os.Stderr, "warning: skipping channel %d: %v\n", i+1, err)
+				continue
+			case ErrorPolicyEmpty:
+				result = append(result, types.Channel{})
+				continue
+			default:
+				return nil, fmt.Errorf("channel %d: %w", i+1, err)
+			}
+		}
+		result = append(result, ch)
+	}
+	return result, nil
+}
+
 func (f *GenericCSV) Encode(writer io.Writer, channels []types.Channel) error {
 	csvWriter := csv.NewWriter(writer)
 	defer csvWriter.Flush()
