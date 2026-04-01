@@ -116,14 +116,20 @@ func encodeChunks(channels []types.Channel, size int, dir string, toFormat strin
 		return err
 	}
 
-	if err := os.RemoveAll(dir); err != nil {
-		return fmt.Errorf("failed to clear output directory: %w", err)
-	}
+	numFiles := (len(channels) + size - 1) / size
+
 	if err := os.MkdirAll(dir, 0755); err != nil {
 		return fmt.Errorf("failed to create output directory: %w", err)
 	}
-
-	numFiles := (len(channels) + size - 1) / size
+	entries, err := os.ReadDir(dir)
+	if err != nil {
+		return fmt.Errorf("failed to read output directory: %w", err)
+	}
+	for _, entry := range entries {
+		if err := os.RemoveAll(filepath.Join(dir, entry.Name())); err != nil {
+			return fmt.Errorf("failed to clear output directory: %w", err)
+		}
+	}
 	digits := len(strconv.Itoa(numFiles))
 
 	for i := range numFiles {
